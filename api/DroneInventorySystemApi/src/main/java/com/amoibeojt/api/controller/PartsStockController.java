@@ -1,4 +1,4 @@
-package com.amoibeojt.api.controller;
+ackage com.amoibeojt.api.controller;
 
 import java.util.List;
 import java.util.UUID;
