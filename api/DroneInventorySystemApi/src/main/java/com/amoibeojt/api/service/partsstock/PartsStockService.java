@@ -1,4 +1,4 @@
-ackage com.amoibeojt.api.service.partsstock;
+package com.amoibeojt.api.service.partsstock;
 
 import java.util.List;
 

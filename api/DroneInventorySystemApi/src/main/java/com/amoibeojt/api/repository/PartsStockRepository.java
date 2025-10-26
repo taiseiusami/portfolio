@@ -1,4 +1,4 @@
-ackage com.amoibeojt.api.repository;
+package com.amoibeojt.api.repository;
 
 import java.util.List;
 
