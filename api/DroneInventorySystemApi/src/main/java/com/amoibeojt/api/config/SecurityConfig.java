@@ -20,13 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.amoibeojt.api.service.CustomUserDetailsService;
 import com.amoibeojt.api.util.JwtAuthenticationFilter;
 
-/**
- * セキュリティ設定
- * APIはJWTによる認証が必要だが今回は割愛
- * @author your name
- *
- */
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -35,14 +28,21 @@ public class SecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            CustomAuthenticationEntryPoint customEntryPoint // ← 追加
+    ) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/admin/auth/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)  // JWTフィルタを適用
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(customEntryPoint) // ← 追加
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
@@ -73,17 +73,15 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-    
+
     @Bean
     public HttpFirewall allowDoubleSlashHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        // 生スラッシュの連続を許可
         firewall.setAllowUrlEncodedSlash(true);
-        // エンコードされたスラッシュ "%2F" も許可
         firewall.setAllowUrlEncodedDoubleSlash(true);
         return firewall;
     }
-    
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(HttpFirewall firewall) {
         return web -> web.httpFirewall(firewall);
