@@ -17,6 +17,7 @@ public class PartsReceivingMessageDTO {
     private String status;    // 共通
     private String timestamp; // 400/500用
 
+    
     // 400/500用コンストラクタ
     public PartsReceivingMessageDTO(String errorCode, String message, String status) {
         this.errorCode = errorCode;

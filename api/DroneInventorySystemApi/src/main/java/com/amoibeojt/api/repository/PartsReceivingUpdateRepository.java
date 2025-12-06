@@ -66,6 +66,7 @@ public class PartsReceivingUpdateRepository {
         jdbcTemplate.update(sql, stockId, receiveAmount, partsName, centerId, categoryId, description);
     }
 
+    
     /**
      * 部品入出庫履歴登録（履歴テーブルは transaction_type 等を保持）
      */

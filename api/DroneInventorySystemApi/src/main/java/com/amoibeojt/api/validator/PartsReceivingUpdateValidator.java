@@ -60,6 +60,7 @@ public class PartsReceivingUpdateValidator implements Validator {
             throw new InvalidInputException("itemsは必須項目です。");
         }
 
+        
         // items配列の中身チェック
         for (int i = 0; i < dto.getItems().size(); i++) {
             var item = dto.getItems().get(i);

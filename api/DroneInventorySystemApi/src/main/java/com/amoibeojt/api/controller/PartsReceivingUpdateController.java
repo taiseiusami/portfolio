@@ -34,6 +34,7 @@ public class PartsReceivingUpdateController {
     private final PartsReceivingUpdateService partsReceivingUpdateService;
     private final PartsReceivingUpdateValidator validator;
 
+    
     @PostMapping
     public ResponseEntity<?> register(@RequestBody PartsReceivingUpdateDTO dto) {
         try {

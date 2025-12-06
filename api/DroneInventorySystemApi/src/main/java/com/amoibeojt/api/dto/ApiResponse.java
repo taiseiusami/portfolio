@@ -24,6 +24,7 @@ public class ApiResponse<T> {
     // 実際のペイロード（nullの場合はレスポンスに含まれない）
     private T data;
 
+    
     // status と message だけを受け取るコンストラクタ
     public ApiResponse(String status, String message) {
         this.status = status;

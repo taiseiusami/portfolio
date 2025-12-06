@@ -13,6 +13,7 @@ import com.amoibeojt.api.repository.PartsReceivingUpdateRepository;
 
 import lombok.RequiredArgsConstructor;
 
+
 /**
  * 部品入荷登録サービス
  * 在庫テーブル(parts_stock)更新／新規作成＋履歴テーブル(parts_stock_history)登録
