@@ -53,7 +53,7 @@ public class PartsReceivingUpdateDTO {
         private String partsName;
 
         // 入荷数量
-        private String receiveAmount;
+        private String amountReceive;
 
         // 部品説明（任意）
         private String description;
