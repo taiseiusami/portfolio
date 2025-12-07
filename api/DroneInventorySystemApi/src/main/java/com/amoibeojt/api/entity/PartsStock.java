@@ -8,15 +8,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
  * 部品在庫Entity
- * 
- * @author your name
- *
  */
 @Entity
 @Table(name = "parts_stock")
@@ -24,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PartsStock {
-	
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_id")
@@ -53,5 +51,4 @@ public class PartsStock {
 
     @Column(name = "update_date", nullable = false)
     private LocalDateTime updateDate;
-
 }
