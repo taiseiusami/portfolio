@@ -20,7 +20,6 @@ public class PartsReceivingUpdateRepository {
     private final PartsStockJpa stockJpa;
     private final PartsStockHistoryJpa historyJpa;
 
-    // 在庫操作
     public boolean existsByStockId(Integer stockId) {
         return stockJpa.existsByStockId(stockId);
     }
@@ -33,11 +32,14 @@ public class PartsReceivingUpdateRepository {
         return stockJpa.findByStockIds(stockIds);
     }
 
-    public PartsStock saveStock(PartsStock stock) {
-        return stockJpa.save(stock);
+    public PartsStock findByStockId(Integer stockId) {
+        return stockJpa.findById(stockId).orElse(null);
     }
 
-    // 履歴操作
+    public PartsStock saveStock(PartsStock stock) {
+        return stockJpa.save(stock); // 楽観ロックが有効
+    }
+
     public PartsStockHistory saveHistory(PartsStockHistory history) {
         return historyJpa.save(history);
     }

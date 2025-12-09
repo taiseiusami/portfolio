@@ -8,13 +8,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 部品在庫Entity
+ * 部品在庫Entity（楽観ロック対応）
  */
 @Entity
 @Table(name = "parts_stock")
@@ -51,4 +52,11 @@ public class PartsStock {
 
     @Column(name = "update_date", nullable = false)
     private LocalDateTime updateDate;
+
+    /**
+     * 楽観ロック用バージョンカラム
+     */
+    @Version
+    @Column(name = "version", nullable = false)
+    private Integer version;
 }
