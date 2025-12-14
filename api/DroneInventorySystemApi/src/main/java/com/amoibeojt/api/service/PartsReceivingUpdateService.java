@@ -18,7 +18,7 @@ import com.amoibeojt.api.repository.PartsReceivingUpdateRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 部品入荷登録サービス（楽観ロック対応＋リトライ）
+ * 部品入荷登録サービス（外部指定IDをそのまま利用）
  */
 @Service
 @RequiredArgsConstructor
@@ -37,6 +37,20 @@ public class PartsReceivingUpdateService {
 
             while (!updated && retryCount < 3) {
                 try {
+                    // 必須チェック
+                    if (item.getStockId() == null || item.getStockId().isBlank()) {
+                        throw new IllegalArgumentException("stockIdIsRequired");
+                    }
+                    if (item.getCenterId() == null || item.getCenterId().isBlank()) {
+                        throw new IllegalArgumentException("centerIdIsRequired");
+                    }
+                    if (item.getCategoryId() == null || item.getCategoryId().isBlank()) {
+                        throw new IllegalArgumentException("categoryIdIsRequired");
+                    }
+                    if (item.getAmountReceive() == null || item.getAmountReceive().isBlank()) {
+                        throw new IllegalArgumentException("amountReceiveIsRequired");
+                    }
+
                     int stockId = Integer.parseInt(item.getStockId());
                     int centerId = Integer.parseInt(item.getCenterId());
                     int categoryId = Integer.parseInt(item.getCategoryId());
@@ -47,14 +61,26 @@ public class PartsReceivingUpdateService {
 
                     String remarks;
                     if (stock != null) {
+                        // ★ DTOのversionとDBのversionを比較
+                        if (item.getVersion() != null && !item.getVersion().isBlank()) {
+                            int clientVersion = Integer.parseInt(item.getVersion());
+                            if (!stock.getVersion().equals(clientVersion)) {
+                                throw new OptimisticLockingFailureException(
+                                        "在庫更新競合: DB version=" + stock.getVersion() + ", client version=" + clientVersion);
+                            }
+                        }
+
+                        // 更新処理
                         stock.setAmount(amountBefore + amountReceive);
                         stock.setName(item.getPartsName());
                         stock.setCenterId(centerId);
                         stock.setCategoryId(categoryId);
                         stock.setDescription(item.getDescription());
                         stock.setUpdateDate(LocalDateTime.now());
+
                         remarks = "在庫調整";
                     } else {
+                        // 新規登録
                         stock = new PartsStock();
                         stock.setStockId(stockId);
                         stock.setAmount(amountReceive);
@@ -65,13 +91,16 @@ public class PartsReceivingUpdateService {
                         stock.setDeleteFlag(false);
                         stock.setCreateDate(LocalDateTime.now());
                         stock.setUpdateDate(LocalDateTime.now());
+                        stock.setVersion(0); // 新規は0で初期化
                         remarks = "初回入荷";
                     }
 
-                    repository.saveStock(stock); // 楽観ロックが効く
+                    // 保存
+                    stock = repository.saveStock(stock);
 
+                    // 履歴登録
                     PartsStockHistory history = new PartsStockHistory();
-                    history.setStockId(stockId);
+                    history.setStockId(stock.getStockId());
                     history.setTransactionType(dto.getTransactionType());
                     history.setTransactionDate(LocalDateTime.parse(formattedTransactionDate,
                             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
@@ -87,12 +116,12 @@ public class PartsReceivingUpdateService {
                     history.setUpdateDate(LocalDateTime.now());
 
                     repository.saveHistory(history);
-                    LOGGER.info("履歴登録完了 stockId={}", stockId);
+                    LOGGER.info("履歴登録完了 stockId={}", stock.getStockId());
                     updated = true;
 
                 } catch (OptimisticLockingFailureException e) {
                     retryCount++;
-                    LOGGER.warn("在庫ID {} の更新競合。リトライ {}/3", item.getStockId(), retryCount);
+                    LOGGER.warn("在庫更新競合。リトライ {}/3", retryCount);
                     if (retryCount >= 3) {
                         throw e;
                     }
@@ -106,7 +135,7 @@ public class PartsReceivingUpdateService {
             OffsetDateTime odt = OffsetDateTime.parse(isoDateTime);
             return odt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         } catch (Exception e) {
-            throw new IllegalArgumentException("transaction_dateの形式が不正です。");
+            throw new IllegalArgumentException("transactionDateInvalidFormat");
         }
     }
 }

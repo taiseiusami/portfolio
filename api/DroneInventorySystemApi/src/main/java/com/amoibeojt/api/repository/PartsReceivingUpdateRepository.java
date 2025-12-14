@@ -37,7 +37,7 @@ public class PartsReceivingUpdateRepository {
     }
 
     public PartsStock saveStock(PartsStock stock) {
-        return stockJpa.save(stock); // 楽観ロックが有効
+        return stockJpa.save(stock); // 新規なら insert、既存なら update
     }
 
     public PartsStockHistory saveHistory(PartsStockHistory history) {

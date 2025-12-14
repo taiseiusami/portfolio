@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
@@ -15,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 部品在庫Entity（楽観ロック対応）
+ * 部品在庫Entity（外部指定ID利用、楽観ロック対応）
  */
 @Entity
 @Table(name = "parts_stock")
@@ -25,9 +23,8 @@ import lombok.NoArgsConstructor;
 public class PartsStock {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_id")
-    private Integer stockId;
+    private Integer stockId;  // 外部指定IDをそのまま利用
 
     @Column(name = "category_id", nullable = false)
     private Integer categoryId;
@@ -53,10 +50,8 @@ public class PartsStock {
     @Column(name = "update_date", nullable = false)
     private LocalDateTime updateDate;
 
-    /**
-     * 楽観ロック用バージョンカラム
-     */
+    /** 楽観ロック用バージョンカラム */
     @Version
     @Column(name = "version", nullable = false)
-    private Integer version;
+    private Integer version = 0; // 新規登録時は0で初期化
 }

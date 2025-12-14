@@ -57,5 +57,9 @@ public class PartsReceivingUpdateDTO {
 
         // 部品説明（任意）
         private String description;
+
+        // ★ 楽観ロック用バージョン（比較専用）
+        // クライアントが持っている最新のversionを送信し、サービス側でDBのversionと比較する
+        private String version;
     }
 }

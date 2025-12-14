@@ -29,7 +29,7 @@ public class PartsStockHistory {
     private Long historyId;
 
     @Column(name = "stock_id", nullable = false)
-    private Integer stockId;
+    private Integer stockId;  // Serviceで必ずセットする
 
     @Column(name = "transaction_type", length = 50, nullable = false)
     private String transactionType;
