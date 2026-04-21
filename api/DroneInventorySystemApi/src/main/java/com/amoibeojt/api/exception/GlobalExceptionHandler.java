@@ -14,13 +14,10 @@ import com.amoibeojt.api.dto.ErrorResponseDTO;
 
 /**
  * グローバル例外ハンドラ
- * 
- * @author your name
- *
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponseDTO> handleUnauthorized(UnauthorizedException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
@@ -30,7 +27,6 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             ZonedDateTime.now().toString()
         );
-        
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
@@ -38,12 +34,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleForbidden(ForbiddenException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
             "error",
-        	"権限がありません",
+            "権限がありません",
             "FORBIDDEN",
             ex.getMessage(),
             ZonedDateTime.now().toString()
         );
-        
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
@@ -56,10 +51,9 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             ZonedDateTime.now().toString()
         );
-        
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
-	
+
     @ExceptionHandler(DuplicateRequestException.class)
     public ResponseEntity<ErrorResponseDTO> handleConflict(DuplicateRequestException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
@@ -69,10 +63,9 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             ZonedDateTime.now().toString()
         );
-        
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
-	
+
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<ErrorResponseDTO> handleInsufficientStock(InsufficientStockException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
@@ -82,13 +75,16 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             ZonedDateTime.now().toString()
         );
-        
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
     }
 
-    @ExceptionHandler({InvalidInputException.class, MethodArgumentTypeMismatchException.class,
-    	ConversionFailedException.class,MissingServletRequestParameterException.class})
-    public ResponseEntity<ErrorResponseDTO> handleInvalidInput(InvalidInputException ex) {
+    @ExceptionHandler({
+        InvalidInputException.class,
+        MethodArgumentTypeMismatchException.class,
+        ConversionFailedException.class,
+        MissingServletRequestParameterException.class
+    })
+    public ResponseEntity<ErrorResponseDTO> handleInvalidInput(Exception ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
             "error",
             "入力が無効です",
@@ -96,10 +92,21 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             ZonedDateTime.now().toString()
         );
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
-    
+
+    @ExceptionHandler({IllegalArgumentException.class, NumberFormatException.class})
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgument(Exception ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+            "error",
+            "入力値が不正です",
+            "INVALID_ARGUMENT",
+            ex.getMessage(),
+            ZonedDateTime.now().toString()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleAllExceptions(Exception ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
@@ -109,7 +116,6 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             ZonedDateTime.now().toString()
         );
-
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }
